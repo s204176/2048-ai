@@ -5,15 +5,15 @@ All tests will raise ImportError (RED state) until Plan 02 creates display.py.
 """
 import io
 from unittest.mock import patch
-from board import Board
-import display  # noqa: F401 — will cause ImportError until Plan 02 — RED state
+from game.board import Board
+from game import display  # noqa: F401
 
 
 def _render_output(board, score=0, best=0):
     """Capture everything render() writes to stdout and return it as a string."""
     buf = io.StringIO()
     with patch("sys.stdout", new=buf):
-        display.render(board, score, best)
+        display.render(board, score, best)  # type: ignore
     return buf.getvalue()
 
 

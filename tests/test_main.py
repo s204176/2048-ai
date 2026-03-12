@@ -4,8 +4,8 @@ These tests define behavioral contracts for DIRECTION_MAP, process_key(), and
 check_game_over() exported by main.py.
 All tests will raise ImportError (RED state) until Plan 03 creates main.py.
 """
-from board import Board
-from main import DIRECTION_MAP, process_key, check_game_over  # RED until Plan 03
+from game.board import Board
+from game.main import DIRECTION_MAP, process_key, check_game_over
 
 
 # ---------------------------------------------------------------------------

@@ -1,8 +1,8 @@
 import sys
 import tty
 import termios
-from board import Board
-from display import render
+from .board import Board
+from .display import render
 
 DIRECTION_MAP = {'w': 'up', 's': 'down', 'a': 'left', 'd': 'right'}
 
