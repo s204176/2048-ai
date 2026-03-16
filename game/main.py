@@ -1,6 +1,4 @@
 import sys
-import tty
-import termios
 from .board import Board
 from .display import render
 
@@ -8,21 +6,23 @@ DIRECTION_MAP = {'w': 'up', 's': 'down', 'a': 'left', 'd': 'right'}
 
 
 def get_key():
-    """Read one keypress from stdin (raw mode). Returns lowercase char.
-    Raises KeyboardInterrupt on Ctrl+C (\\x03).
-    IMPORTANT: always restores terminal settings in finally block.
-    """
-    fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
-    try:
-        tty.setraw(fd)
-        ch = sys.stdin.read(1)
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-    if ch == '\x03':
-        raise KeyboardInterrupt
-    return ch.lower()
-
+    if sys.platform == "win32":
+        import msvcrt
+        ch = msvcrt.getch()
+        if ch in (b'\x00', b'\xe0'):  # Arrow keys send two bytes on Windows
+            ch = msvcrt.getch()
+            return {b'H': 'up', b'P': 'down', b'K': 'left', b'M': 'right'}.get(ch, '')
+        return ch.decode('utf-8', errors='ignore')
+    else:
+        import tty, termios
+        fd = sys.stdin.fileno()
+        old = termios.tcgetattr(fd)
+        try:
+            tty.setraw(fd)
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old)
+        return ch
 
 def process_key(board, key, score, best, won):
     """Apply one keypress to the game state. Pure function — no I/O.
