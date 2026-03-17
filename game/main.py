@@ -1,4 +1,7 @@
 import sys
+import time
+
+from game.ai import best_move
 from .board import Board
 from .display import render
 
@@ -53,6 +56,7 @@ def check_game_over(board, score):
 
 
 def main():
+    auto = '--auto' in sys.argv or '-a' in sys.argv
     board = Board()
     score = 0
     best = 0
@@ -61,13 +65,21 @@ def main():
     render(board, score, best)
 
     while True:
-        try:
-            key = get_key()
-        except KeyboardInterrupt:
-            break
+        if auto:
+            time.sleep(0.1)  # Small delay to make it watchable
+            direction=best_move(board, depth=3)
+            if direction is None:
+                print(f"\nGame over! Final score: {score}")
+                break
+            key = {'up': 'w', 'down': 's', 'left': 'a', 'right': 'd'}[direction]
+        else:
+            try:
+                key = get_key()
+            except KeyboardInterrupt:
+                break
 
-        if key == 'q':
-            break
+            if key == 'q':
+                break
 
         prev_board = board
         board, score, best, won = process_key(board, key, score, best, won)
