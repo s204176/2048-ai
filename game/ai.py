@@ -1,15 +1,32 @@
 from game.board import Board
+import math
 
 DIRECTIONS = ['left', 'right', 'up', 'down']
 
-def get_heuristic_score(board):
-    "This is a temporary score, we will make it better later. For now, it just counts empty cells."
+def get_empty_count(board):
     empty_count = 0
     for row in board.grid:
         for cell in row:
             if cell == 0:
                 empty_count += 1
     return empty_count
+
+def get_max_tile(board):
+    max_tile = 0
+    for row in board.grid:
+        for cell in row:
+            if cell > max_tile:
+                max_tile = cell
+    return max_tile
+
+
+
+def get_heuristic_score(board):
+    empty_count = get_empty_count(board)
+    max_tile = get_max_tile(board)
+
+    # Weigh the max tile and empty count
+    return empty_count * 100 + math.log2(max_tile) * 10
 
 
 def expectimax(board, depth, is_maximizing):
