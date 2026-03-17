@@ -25,7 +25,7 @@ def get_heuristic_score(board):
     empty_count = get_empty_count(board)
     max_tile = get_max_tile(board)
 
-    # Weigh the max tile and empty count
+    # Here we weigh how much each part of the heuristic contributes... fiddle with this to see how it changes the AI's behavior
     return empty_count * 100 + math.log2(max_tile) * 10
 
 
