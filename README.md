@@ -49,6 +49,10 @@ python3 -m pytest tests/
     └── test_main.py
 ```
 
+## Heuristic design notes
+
+**Why log2 for monotonicity:** Tile values are exponential (2, 4, 8, 16...), so raw differences between large tiles dwarf those between small ones even when they represent the same structural disorder. Log2 normalises this so every one-step break in ordering costs the same penalty regardless of tile magnitude.
+
 ## Roadmap
 
 - [x] Core game logic

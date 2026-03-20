@@ -2,6 +2,9 @@ from game.board import Board
 import math
 
 DIRECTIONS = ['left', 'right', 'up', 'down']
+EMPTY_WEIGHT = 100
+MAX_TILE_WEIGHT = 10
+MONOTONICITY_WEIGHT = 25
 
 def get_empty_count(board):
     empty_count = 0
@@ -21,12 +24,45 @@ def get_max_tile(board):
 
 
 
+def get_monotonicity(board):
+    # Penalty for boards where tiles are not ordered along rows and columns.
+    # Log2 is used so that breaks between large tiles cost the same as breaks
+    # between small tiles — tile values are exponential, so raw differences
+    # would unfairly penalise high-value disorder.
+    score = 0
+    for i in range(4):
+        # Row: compare each adjacent pair left-to-right
+        inc, dec = 0, 0
+        for j in range(3):
+            left  = math.log2(board.grid[i][j])   if board.grid[i][j]   else 0
+            right = math.log2(board.grid[i][j+1]) if board.grid[i][j+1] else 0
+            if left > right:
+                dec += left - right
+            elif right > left:
+                inc += right - left
+        # Take the lesser penalty — the AI gets to choose which direction is "downhill"
+        score += min(inc, dec)
+
+        # Column: compare each adjacent pair top-to-bottom (reuse i as column index)
+        inc, dec = 0, 0
+        for j in range(3):
+            up   = math.log2(board.grid[j][i])   if board.grid[j][i]   else 0
+            down = math.log2(board.grid[j+1][i]) if board.grid[j+1][i] else 0
+            if up > down:
+                dec += up - down
+            elif down > up:
+                inc += down - up
+        score += min(inc, dec)
+
+    return score  # higher = more disorder = worse
+
+
 def get_heuristic_score(board):
     empty_count = get_empty_count(board)
     max_tile = get_max_tile(board)
 
     # Here we weigh how much each part of the heuristic contributes... fiddle with this to see how it changes the AI's behavior
-    return empty_count * 100 + math.log2(max_tile) * 10
+    return empty_count * EMPTY_WEIGHT + math.log2(max_tile) * MAX_TILE_WEIGHT - get_monotonicity(board) * MONOTONICITY_WEIGHT
 
 
 def expectimax(board, depth, is_maximizing):
