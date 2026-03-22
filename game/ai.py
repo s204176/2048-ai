@@ -2,8 +2,8 @@ from game.board import Board
 import math
 
 DIRECTIONS = ['left', 'right', 'up', 'down']
-EMPTY_WEIGHT = 100
-MAX_TILE_WEIGHT = 10
+EMPTY_WEIGHT = 50
+MAX_TILE_WEIGHT = 5
 MONOTONICITY_WEIGHT = 25
 
 def get_empty_count(board):
