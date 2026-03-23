@@ -11,10 +11,6 @@ def _reverse_rows(grid):
 
 
 def _slide_row_left(row):
-    """Compress, merge equal adjacent pairs (no double-merge), and pad with zeros.
-
-    Returns (new_row, score_gained).
-    """
     # Step 1: compress — remove zeros
     tiles = [t for t in row if t != 0]
     # Step 2: merge equal adjacent tiles (each tile merges at most once)
@@ -35,7 +31,6 @@ def _slide_row_left(row):
 
 
 def _apply_left(grid):
-    """Apply _slide_row_left to every row; return (new_grid, total_score)."""
     new_grid = []
     total_score = 0
     for row in grid:
@@ -63,11 +58,7 @@ class Board:
     SIZE = 4
 
     def __init__(self, grid=None):
-        """Create a Board.
-
-        grid=None  — fresh 4x4 grid of zeros with two tiles spawned.
-        grid=list  — initialise from the provided grid (defensive copy, no spawning).
-        """
+        # Create a board with the size of the grid specified.
         if grid is None:
             self.grid = [[0] * self.SIZE for _ in range(self.SIZE)]
             self.spawn_tile()
@@ -77,11 +68,7 @@ class Board:
             self.grid = [row[:] for row in grid]
 
     def spawn_tile(self):
-        """Spawn one tile in a random empty cell.
-
-        Picks a random empty cell and places a 2 (90%) or 4 (10%) there.
-        No-op when the board is full.
-        """
+        # Spawns a new tile (2 or 4) in a random empty cell.
         empty = [
             (r, c)
             for r in range(self.SIZE)
@@ -94,16 +81,7 @@ class Board:
         self.grid[r][c] = random.choices([2, 4], weights=[9, 1])[0]
 
     def move(self, direction):
-        """Apply a move in the given direction.
-
-        direction: "left" | "right" | "up" | "down" (case-insensitive).
-
-        Returns:
-            (new_board, score_gained, moved: bool)
-
-        If nothing moved, returns (self, 0, False) — same instance, no copy.
-        If moved, returns (Board(grid=new_grid), score, True) with one tile spawned.
-        """
+        # Moves a given direction unless the move is invalid (no tiles slide or merge).
         direction = direction.lower()
         if direction not in _TRANSFORMS:
             raise ValueError(
@@ -124,11 +102,7 @@ class Board:
         return new_board, score, True
 
     def is_game_over(self):
-        """Return True when no valid move exists.
-
-        Uses a direct adjacent-pair scan instead of calling move() four times,
-        avoiding temporary Board allocations (important for Expectimax performance).
-        """
+        # Check if there are no valid moves left. Note that this is not the same as "no empty cells".
         # Fast path: any empty cell means at least one slide is possible.
         for row in self.grid:
             if 0 in row:
@@ -146,5 +120,5 @@ class Board:
         return True
 
     def has_won(self):
-        """Return True when any tile equals 2048."""
+        # Win condition: any cell has value 2048 or more. (The game doesn't end at 2048, so we check for "or more".)
         return any(cell == 2048 for row in self.grid for cell in row)

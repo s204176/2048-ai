@@ -28,11 +28,6 @@ def get_key():
         return ch
 
 def process_key(board, key, score, best, won):
-    """Apply one keypress to the game state. Pure function — no I/O.
-
-    Returns (board, score, best, won).
-    Invalid or non-moving keys return inputs unchanged.
-    """
     if key not in DIRECTION_MAP:
         return board, score, best, won
 
@@ -51,7 +46,6 @@ def process_key(board, key, score, best, won):
 
 
 def check_game_over(board, score):
-    """Return True when the board has no valid moves."""
     return board.is_game_over()
 
 
