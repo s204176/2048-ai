@@ -44,6 +44,7 @@ python3 -m pytest tests/
 │   └── main.py        # Entry point & game loop
 
 └── tests/
+    ├── test_ai.py
     ├── test_board.py
     ├── test_display.py
     └── test_main.py
